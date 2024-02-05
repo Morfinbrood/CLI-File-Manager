@@ -1,3 +1,4 @@
+import { createReadStream, createWriteStream } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -50,7 +51,7 @@ export class FileOperations {
     async createFile(fileName) {
         try {
             const fullPath = path.resolve(this.currentDirectory, fileName);
-            console.log (fullPath);
+            console.log(fullPath);
             await fs.writeFile(fullPath, '');
             console.log(`File ${fileName} created successfully in ${this.currentDirectory}`);
         } catch (error) {
