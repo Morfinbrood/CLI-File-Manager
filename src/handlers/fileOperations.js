@@ -50,6 +50,7 @@ export class FileOperations {
     async createFile(fileName) {
         try {
             const fullPath = path.resolve(this.currentDirectory, fileName);
+            console.log (fullPath);
             await fs.writeFile(fullPath, '');
             console.log(`File ${fileName} created successfully in ${this.currentDirectory}`);
         } catch (error) {

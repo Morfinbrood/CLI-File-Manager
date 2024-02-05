@@ -15,7 +15,7 @@ export class NavigateOperations {
             case 'up':
                 this.goUp();
             default:
-                console.error('Invalid input. Unknown os command.');
+                console.error('Invalid input. Unknown FileNavigation command.');
         }
     }
 

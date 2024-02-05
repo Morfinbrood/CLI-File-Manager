@@ -1,20 +1,21 @@
 import { createReadStream, createWriteStream } from 'fs';
 import { createHash } from 'crypto';
-import { brotliCompress, brotliDecompress } from 'zlib/promises';
+import { brotliCompress, brotliDecompress } from 'zlib';
+import path from 'path';
+import fs from 'fs/promises';
 
 export class HashAndCompressionOperations {
-
-    async handleHashAndCompressionCommands(params, currentDirectory) {
+    async handleHashAndCompressionCommands(command, params, currentDirectory) {
         this.currentDirectory = currentDirectory;
-        switch (params) {
+        switch (command) {
             case 'hash':
-                this.calculateFileHash(params[0]);
+                await this.calculateFileHash(params[0]);
                 break;
             case 'compress':
-                this.compressFile(params[0], params[1]);
+                await this.compressFile(params[0], params[1]);
                 break;
             case 'decompress':
-                this.decompressFile(params[0], params[1]);
+                await this.decompressFile(params[0], params[1]);
                 break;
             default:
                 console.error('Invalid input. Unknown operation.');
@@ -23,12 +24,12 @@ export class HashAndCompressionOperations {
 
     async calculateFileHash(filePath) {
         try {
-            const fileData = await fsPromises.readFile(filePath);
+            const fileData = await fs.readFile(filePath);
             const hash = createHash('sha256');
             hash.update(fileData);
             console.log(`Hash for file ${filePath}: ${hash.digest('hex')}`);
         } catch (error) {
-            console.error('Error calculating file hash:', error.message);
+            console.log('Error calculating file hash:', error.message);
         }
     }
 

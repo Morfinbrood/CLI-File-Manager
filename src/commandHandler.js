@@ -1,6 +1,6 @@
 import { FileOperations } from './handlers/fileOperations.js';
 import { OSOperations } from './handlers/osOperations.js';
-//import { HashAndCompressionOperations } from './handlers/hashAndCompressionOperations.js';
+import { HashAndCompressionOperations } from './handlers/hashAndCompressionOperations.js';
 import { NavigateOperations } from './handlers/navigateOperations.js'
 
 
@@ -10,7 +10,7 @@ export class CommandHandler {
         this.navigateOperations = new NavigateOperations();
         this.fileOperations = new FileOperations();
         this.osOperations = new OSOperations();
-        //this.hashAndCompressionOperations = new HashAndCompressionOperations();
+        this.hashAndCompressionOperations = new HashAndCompressionOperations();
     }
 
     async handleCommand(command) {
@@ -23,7 +23,7 @@ export class CommandHandler {
             case 'ls':
             case 'cd':
             case 'up':
-                await this.navigateOperations.handleNavigateCommand(command, params, this.currentDirectory);
+                await this.navigateOperations.handleNavigateCommand(operation, params, this.currentDirectory);
                 break;
             case 'add':
             case 'rn':
@@ -31,15 +31,16 @@ export class CommandHandler {
             case 'mv':
             case 'rm':
             case 'cat':
-                await this.fileOperations.handleFileCommand(command, params, this.currentDirectory);
+                await this.fileOperations.handleFileCommand(operation, params, this.currentDirectory);
                 break;
             case 'os':
                 await this.osOperations.handleOSCommand(params);
                 break;
-            // case 'hash':
-            // case 'compress':
-            // case 'decompress':
-            //     await this.hashAndCompressionOperations.handleHashAndCompressionCommands(command, params, this.currentDirectory);
+            case 'hash':
+            case 'compress':
+            case 'decompress':
+                await this.hashAndCompressionOperations.handleHashAndCompressionCommands(operation, params, this.currentDirectory);
+                break;
             case '.exit':
                 await this.exitFileManager();
                 break;

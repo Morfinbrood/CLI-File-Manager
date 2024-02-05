@@ -7,11 +7,16 @@ export class FileManager {
     }
 
     async start() {
-        this.printWelcomeMessage();
 
-        while (true) {
-            const userInput = await this.getUserInput();
-            await this.commandHandler.handleCommand(userInput);
+        try {
+            this.printWelcomeMessage();
+            while (true) {
+                const userInput = await this.getUserInput();
+                await this.commandHandler.handleCommand(userInput);
+            }
+        } catch (error) {
+            console.error(`Somthimg wrong with start: ${error.message}`)
+
         }
     }
 
