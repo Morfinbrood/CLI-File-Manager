@@ -1,8 +1,8 @@
 import { createReadStream, createWriteStream } from 'fs';
 import { createHash } from 'crypto';
-import { brotliCompress, brotliDecompress } from 'zlib';
 import path from 'path';
 import fs from 'fs/promises';
+import zlib from 'zlib';
 
 export class HashAndCompressionOperations {
     async handleHashAndCompressionCommands(command, params, currentDirectory) {
@@ -41,7 +41,7 @@ export class HashAndCompressionOperations {
             const readStream = createReadStream(sourceFullPath);
             const writeStream = createWriteStream(destinationFullPath);
 
-            const compressStream = brotliCompress();
+            const compressStream = zlib.createBrotliCompress();
             readStream.pipe(compressStream).pipe(writeStream);
 
             await new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export class HashAndCompressionOperations {
             const readStream = createReadStream(sourceFullPath);
             const writeStream = createWriteStream(destinationFullPath);
 
-            const decompressStream = brotliDecompress();
+            const decompressStream = zlib.createBrotliDecompress();
             readStream.pipe(decompressStream).pipe(writeStream);
 
             await new Promise((resolve, reject) => {
