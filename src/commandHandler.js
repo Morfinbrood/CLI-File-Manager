@@ -16,14 +16,11 @@ export class CommandHandler {
     async handleCommand(command) {
         const [operation, ...params] = command.split(' ');
 
-        this.currentDirectory = process.cwd();
-        console.log(`You are currently in ${this.currentDirectory}`);
-
         switch (operation) {
             case 'ls':
             case 'cd':
             case 'up':
-                await this.navigateOperations.handleNavigateCommand(operation, params, this.currentDirectory);
+                await this.navigateOperations.handleNavigateCommand(operation, params);
                 break;
             case 'add':
             case 'rn':
@@ -31,7 +28,7 @@ export class CommandHandler {
             case 'mv':
             case 'rm':
             case 'cat':
-                await this.fileOperations.handleFileCommand(operation, params, this.currentDirectory);
+                await this.fileOperations.handleFileCommand(operation, params, this.navigateOperations.getCurrentDirectory());
                 break;
             case 'os':
                 await this.osOperations.handleOSCommand(params);
@@ -39,7 +36,7 @@ export class CommandHandler {
             case 'hash':
             case 'compress':
             case 'decompress':
-                await this.hashAndCompressionOperations.handleHashAndCompressionCommands(operation, params, this.currentDirectory);
+                await this.hashAndCompressionOperations.handleHashAndCompressionCommands(operation, params, this.navigateOperations.getCurrentDirectory());
                 break;
             case '.exit':
                 await this.exitFileManager();
@@ -48,10 +45,7 @@ export class CommandHandler {
                 console.error('Invalid input. Unknown operation.');
         }
 
-    }
-
-    async start() {
-        await this.handleCommand();
+        console.log(`You are currently in ${this.navigateOperations.getCurrentDirectory()}`);
     }
 
     async exitFileManager() {

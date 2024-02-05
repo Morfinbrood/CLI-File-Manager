@@ -3,8 +3,7 @@ import path from 'path';
 
 export class NavigateOperations {
 
-    async handleNavigateCommand(command, params, currentDirectory) {
-        this.currentDirectory = currentDirectory;
+    async handleNavigateCommand(command, params) {
         switch (command) {
             case 'ls':
                 this.listFiles();
@@ -14,14 +13,26 @@ export class NavigateOperations {
                 break;
             case 'up':
                 this.goUp();
+                break;
             default:
                 console.error('Invalid input. Unknown FileNavigation command.');
         }
     }
 
+    getCurrentDirectory() {
+        if (!this.currentDirectory) {
+            this.setCurrentDirectory(process.cwd())
+        };
+        return this.currentDirectory || process.cwd();
+    }
+
+    setCurrentDirectory(newPath) {
+        this.currentDirectory = newPath
+    }
+
     async listFiles() {
         try {
-            const files = await fs.readdir(this.currentDirectory);
+            const files = await fs.readdir(this.getCurrentDirectory());
             const directories = [];
             const regularFiles = [];
 
@@ -51,7 +62,7 @@ export class NavigateOperations {
         console.log('-------------------------------------------');
 
         for (const [index, file] of files.entries()) {
-            const filePath = path.join(this.currentDirectory, file);
+            const filePath = path.join(this.getCurrentDirectory(), file);
             const stats = await fs.stat(filePath);
             const type = stats.isDirectory() ? 'directory' : 'file';
 
@@ -65,12 +76,13 @@ export class NavigateOperations {
 
     async changeDirectory(target) {
         if (target) {
-            const newPath = path.resolve(this.currentDirectory, target);
+            const newPath = path.resolve(this.getCurrentDirectory(), target);
 
+            console.log(`newPath = ${newPath}`)
             try {
                 const stats = await fs.stat(newPath);
                 if (stats.isDirectory()) {
-                    this.currentDirectory = newPath;
+                    this.setCurrentDirectory(newPath);
                     console.log(`You are currently in ${this.currentDirectory}`);
                 } else {
                     console.error('Invalid input. Not a directory.');
@@ -86,10 +98,9 @@ export class NavigateOperations {
     }
 
     goUp() {
-        const parentDirectory = path.resolve(this.currentDirectory, '..');
-        if (parentDirectory !== this.currentDirectory) {
-            this.currentDirectory = parentDirectory;
-            console.log(`You are currently in ${this.currentDirectory}`);
+        const parentDirectory = path.resolve(this.getCurrentDirectory(), '..');
+        if (parentDirectory !== this.getCurrentDirectory()) {
+            this.setCurrentDirectory(parentDirectory);
         } else {
             console.error('Invalid input. Cannot go upper than root directory.');
         }

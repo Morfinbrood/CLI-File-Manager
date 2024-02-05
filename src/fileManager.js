@@ -7,7 +7,6 @@ export class FileManager {
     }
 
     async start() {
-
         try {
             this.printWelcomeMessage();
             while (true) {
@@ -16,7 +15,6 @@ export class FileManager {
             }
         } catch (error) {
             console.error(`Somthimg wrong with start: ${error.message}`)
-
         }
     }
 
