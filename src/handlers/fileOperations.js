@@ -37,9 +37,6 @@ export class FileOperations {
             const fullPath = path.resolve(this.currentDirectory, filePath);
             const fileStream = createReadStream(fullPath);
 
-            fileStream.on('error', (error) => {
-                console.error('Error reading file:', error.message);
-            });
             console.log(`Content of file ${filePath}:`);
             await pipeline(fileStream, stdout, { end: false });
             console.log();
