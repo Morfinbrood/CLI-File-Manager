@@ -1,6 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { homedir } from 'node:os';
 
+
+const colors = {
+    white: '\x1b[0m',
+    green: '\x1b[32m',
+    red: '\x1b[31m',
+}
 export class NavigateOperations {
 
     async handleNavigateCommand(command, params) {
@@ -15,15 +22,15 @@ export class NavigateOperations {
                 this.goUp();
                 break;
             default:
-                console.error('Invalid input. Unknown FileNavigation command.');
+                console.error(`${colors.red}Invalid input. Unknown FileNavigation command.${colors.white}`);
         }
     }
 
     getCurrentDirectory() {
         if (!this.currentDirectory) {
-            this.setCurrentDirectory(process.cwd())
+            this.setCurrentDirectory(homedir())
         };
-        return this.currentDirectory || process.cwd();
+        return this.currentDirectory || homedir();
     }
 
     setCurrentDirectory(newPath) {
@@ -70,7 +77,7 @@ export class NavigateOperations {
             const formattedName = file.padEnd(30);
             const formattedType = type.padEnd(15);
 
-            console.log(`${formattedIndex}${formattedName}${formattedType}`);
+            console.log(`${formattedIndex}${colors.green}${formattedName}${formattedType}${colors.white}`);
         }
     }
 
