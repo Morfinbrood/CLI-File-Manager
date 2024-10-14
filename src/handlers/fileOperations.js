@@ -1,6 +1,8 @@
 import { createReadStream, createWriteStream } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
+import { pipeline } from 'node:stream/promises';
+import { stdout } from 'node:process';
 
 export class FileOperations {
 
@@ -8,22 +10,22 @@ export class FileOperations {
         this.currentDirectory = currentDirectory;
         switch (command) {
             case 'cat':
-                this.readFile(params[0]);
+                await this.readFile(params[0]);
                 break;
             case 'add':
-                this.createFile(params[0]);
+                await this.createFile(params[0]);
                 break;
             case 'rn':
-                this.renameFile(params[0], params[1]);
+                await this.renameFile(params[0], params[1]);
                 break;
             case 'cp':
-                this.copyFile(params[0], params[1]);
+                await this.copyFile(params[0], params[1]);
                 break;
             case 'mv':
-                this.moveFile(params[0], params[1]);
+                await this.moveFile(params[0], params[1]);
                 break;
             case 'rm':
-                this.deleteFile(params[0]);
+                await this.deleteFile(params[0]);
                 break;
             default:
                 console.error('Invalid input. Unknown operation.');
@@ -33,16 +35,14 @@ export class FileOperations {
     async readFile(filePath) {
         try {
             const fullPath = path.resolve(this.currentDirectory, filePath);
-            console.log(fullPath);
             const fileStream = createReadStream(fullPath);
 
             fileStream.on('error', (error) => {
                 console.error('Error reading file:', error.message);
             });
-
-            fileStream.pipe(process.stdout);
-
             console.log(`Content of file ${filePath}:`);
+            await pipeline(fileStream, stdout, { end: false });
+            console.log();
         } catch (error) {
             console.error('Error opening file:', error.message);
         }
@@ -51,7 +51,6 @@ export class FileOperations {
     async createFile(fileName) {
         try {
             const fullPath = path.resolve(this.currentDirectory, fileName);
-            console.log(fullPath);
             await fs.writeFile(fullPath, '');
             console.log(`File ${fileName} created successfully in ${this.currentDirectory}`);
         } catch (error) {

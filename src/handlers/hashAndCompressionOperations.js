@@ -24,10 +24,12 @@ export class HashAndCompressionOperations {
 
     async calculateFileHash(filePath) {
         try {
-            const fileData = await fs.readFile(filePath);
+            const fullPath = path.resolve(this.currentDirectory, filePath);
+            const fileData = await fs.readFile(fullPath);
             const hash = createHash('sha256');
             hash.update(fileData);
-            console.log(`Hash for file ${filePath}: ${hash.digest('hex')}`);
+            console.log(`Hash for file ${fullPath}:`);
+            console.log(`${hash.digest('hex')}`);
         } catch (error) {
             console.log('Error calculating file hash:', error.message);
         }

@@ -11,13 +11,13 @@ export class NavigateOperations {
     async handleNavigateCommand(command, params) {
         switch (command) {
             case 'ls':
-                this.listFiles();
+                await this.listFiles();
                 break;
             case 'cd':
-                this.changeDirectory(params[0]);
+                await this.changeDirectory(params[0]);
                 break;
             case 'up':
-                this.goUp();
+                await this.goUp();
                 break;
             default:
                 console.error(`Invalid input. Unknown FileNavigation command.`);
@@ -52,45 +52,46 @@ export class NavigateOperations {
                 }
             }
 
-            console.log('\nDirectories:');
-            console.log('-------------------------------------------');
-            await this.printFiles(directories.concat(regularFiles));
-
-            console.log('-------------------------------------------\n');
-            console.log (`You are currently in ${this.currentDirectory}`)
+            await this.printFilesTable(directories.concat(regularFiles));
         } catch (error) {
             console.error('Error reading directory:', error.message);
-            console.log (`You are currently in ${this.currentDirectory}`)
         }
     }
 
-    async printFiles(files) {
-        console.log('Index\tName\t\t\tType');
-        console.log('-------------------------------------------');
+    async printFilesTable(files) {
+        console.log();
+        const fileInfoArray = [];
 
-        for (const [index, file] of files.entries()) {
-            const filePath = path.join(this.getCurrentDirectory(), file);
-            const stats = await fs.stat(filePath);
-            const type = stats.isDirectory() ? 'directory' : 'file';
+        const folders = [];
+        const filesList = [];
+        for (const file of files) {
+            const fileStat = await fs.stat(path.resolve(this.currentDirectory, file));
+            const isFile = fileStat.isFile();
+            const fileType = isFile ? 'file' : 'directory';
+            const fileInfo = { Name: file, Type: fileType };
 
-            const formattedIndex = (index + 1).toString().padEnd(6);
-            const formattedName = file.padEnd(30);
-            const formattedType = type.padEnd(15);
-
-            console.log(`${formattedIndex}${colors.green}${formattedName}${formattedType}${colors.white}`);
+            if (fileType === 'directory') {
+                folders.push(fileInfo);
+            } else {
+                filesList.push(fileInfo);
+            }
         }
-    }
+
+        folders.sort((a, b) => a.Name.localeCompare(b.Name));
+        filesList.sort((a, b) => a.Name.localeCompare(b.Name));
+        fileInfoArray.push(...folders, ...filesList);
+
+        console.table(fileInfoArray, ['Name', 'Type']);
+    };
 
     async changeDirectory(target) {
         if (target) {
             const newPath = path.resolve(this.getCurrentDirectory(), target);
 
-            console.log(`newPath = ${newPath}`)
             try {
                 const stats = await fs.stat(newPath);
                 if (stats.isDirectory()) {
                     this.setCurrentDirectory(newPath);
-                    console.log(`You are currently in ${this.currentDirectory}`);
                 } else {
                     console.error('Invalid input. Not a directory.');
                 }
@@ -104,7 +105,7 @@ export class NavigateOperations {
 
     }
 
-    goUp() {
+    async goUp() {
         const parentDirectory = path.resolve(this.getCurrentDirectory(), '..');
         if (parentDirectory !== this.getCurrentDirectory()) {
             this.setCurrentDirectory(parentDirectory);
