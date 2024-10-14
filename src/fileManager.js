@@ -1,4 +1,5 @@
 import { CommandHandler } from './commandHandler.js';
+import { homedir } from 'node:os';
 
 export class FileManager {
     constructor(username) {
@@ -27,5 +28,6 @@ export class FileManager {
 
     printWelcomeMessage() {
         console.log(`Welcome to the File Manager, ${this.username}!`);
+        console.log (`You are currently in ${homedir()}`)
     }
 }

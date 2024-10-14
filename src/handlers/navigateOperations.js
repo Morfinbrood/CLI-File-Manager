@@ -2,11 +2,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import { homedir } from 'node:os';
 
-
 const colors = {
     white: '\x1b[0m',
-    green: '\x1b[32m',
-    red: '\x1b[31m',
+    green: '\x1b[32m'
 }
 export class NavigateOperations {
 
@@ -22,7 +20,7 @@ export class NavigateOperations {
                 this.goUp();
                 break;
             default:
-                console.error(`${colors.red}Invalid input. Unknown FileNavigation command.${colors.white}`);
+                console.error(`Invalid input. Unknown FileNavigation command.`);
         }
     }
 
@@ -59,8 +57,10 @@ export class NavigateOperations {
             await this.printFiles(directories.concat(regularFiles));
 
             console.log('-------------------------------------------\n');
+            console.log (`You are currently in ${this.currentDirectory}`)
         } catch (error) {
             console.error('Error reading directory:', error.message);
+            console.log (`You are currently in ${this.currentDirectory}`)
         }
     }
 
